@@ -1,0 +1,156 @@
+sudo apt update
+sudo apt install openjdk-8-jdk -y
+java -version; javac -version
+sudo apt install openssh-server openssh-client -y
+
+
+manoj@manoj-VirtualBox:~$ sudo adduser hdoop
+[sudo] password for manoj: 
+New password: 
+BAD PASSWORD: The password contains the user name in some form
+Retype new password: 
+passwd: password updated successfully
+Changing the user information for hdoop
+Enter the new value, or press ENTER for the default
+	Full Name []: 
+	Room Number []: 
+	Work Phone []: 
+	Home Phone []: 
+	Other []: 
+manoj@manoj-VirtualBox:~$ su - hdoop
+ hdoop@manoj-VirtualBox:~$ ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+hdoop@manoj-VirtualBox:~$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+hdoop@manoj-VirtualBox:~$ chmod 0600 ~/.ssh/authorized_keys
+hdoop@manoj-VirtualBox:~$ ssh localhost
+The authenticity of host 'localhost (127.0.0.1)' can't be established.
+ED25519 key fingerprint is SHA256:Rcuv2Wn821d72tVMlMZ31brnpxHxmwNvtNVEmtSV9YA.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'localhost' (ED25519) to the list of known hosts.
+Welcome to Ubuntu 24.04.1 LTS (GNU/Linux 6.8.0-48-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+8 additional security updates can be applied with ESM Apps.
+Learn more about enabling ESM Apps service at https://ubuntu.com/esm
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+hdoop@manoj-VirtualBox:~$ tar xzf hadoop-3.4.0.tar.gz
+hdoop@manoj-VirtualBox:~$ nano .bashrc
+
+#Hadoop Related Options
+export HADOOP_HOME=/home/hdoop/hadoop-3.4.0
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+
+hdoop@manoj-VirtualBox:~$ source ~/.bashrc
+
+hdoop@manoj-VirtualBox:~$ nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+
+hdoop@manoj-VirtualBox:~$ which javac
+/usr/bin/javac
+hdoop@manoj-VirtualBox:~$ readlink -f /usr/bin/javac
+
+/usr/lib/jvm/java-8-openjdk-amd64/bin/javac
+
+hdoop@manoj-VirtualBox:~$ nano $HADOOP_HOME/etc/hadoop/core-site.xml
+
+<configuration>
+<property>
+  <name>hadoop.tmp.dir</name>
+  <value>/home/hdoop/tmpdata</value>
+</property>
+<property>
+  <name>fs.default.name</name>
+  <value>hdfs://127.0.0.1:9000</value>
+</property>
+</configuration>
+
+
+
+
+hdoop@manoj-VirtualBox:~$ nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+<configuration>
+<property>
+  <name>dfs.data.dir</name>
+  <value>/home/hdoop/dfsdata/namenode</value>
+</property>
+<property>
+  <name>dfs.data.dir</name>
+  <value>/home/hdoop/dfsdata/datanode</value>
+</property>
+<property>
+  <name>dfs.replication</name>
+  <value>1</value>
+</property>
+</configuration>
+
+
+
+hdoop@manoj-VirtualBox:~$ nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+<configuration>
+<property>
+  <name>yarn.nodemanager.aux-services</name>
+  <value>mapreduce_shuffle</value>
+</property>
+<property>
+  <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+  <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+</property>
+<property>
+  <name>yarn.resourcemanager.hostname</name>
+  <value>127.0.0.1</value>
+</property>
+<property>
+  <name>yarn.acl.enable</name>
+  <value>0</value>
+</property>
+<property>
+  <name>yarn.nodemanager.env-whitelist</name>   
+  <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PERPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+</property>
+</configuration>
+
+
+hdoop@manoj-VirtualBox:~$ hdfs namenode -format
+
+
+hdoop@manoj-VirtualBox:~$ start-dfs.sh
+Starting namenodes on [localhost]
+Starting datanodes
+Starting secondary namenodes [manoj-VirtualBox]
+manoj-VirtualBox: Warning: Permanently added 'manoj-virtualbox' (ED25519) to the list of known hosts.
+
+hdoop@manoj-VirtualBox:~$ start-yarn.sh
+Starting resourcemanager
+Starting nodemanagers
+
+hdoop@manoj-VirtualBox:~$ jps
+4818 NameNode
+5490 NodeManager
+5365 ResourceManager
+4952 DataNode
+5166 SecondaryNameNode
+5775 Jps
