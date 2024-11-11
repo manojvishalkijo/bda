@@ -120,6 +120,7 @@ hdfs dfs -put mm.txt /InputMM2
 hadoop jar MM2.jar OneStepMatemul /InputMM2 /OutputMM2
 hadoop jar MM2.jar OneStepMatemul /InputMM2 /OutputMM3
 hdfs dfs -ls /OutputMM3
+OutputWC/part-r-00000
 file name exist like part-r-0000 paste it 
 hdfs dfs -cat /OutputMM2/part-r-00000 
 
