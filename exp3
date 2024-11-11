@@ -1,0 +1,129 @@
+1)start-all.sh
+2)mapred classpath
+3)copy the path in mapred classpath
+4)export CLASSPATH="paste"
+5)gedit OneStepMatemul.java 
+
+#paste this code:
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import java.io.IOException;
+
+public class MatrixMultiplication {
+
+    // Mapper Class
+    public static class MatrixMapper extends Mapper<Object, Text, Text, IntWritable> {
+        private Text outputKey = new Text();
+        private IntWritable outputValue = new IntWritable();
+
+        @Override
+        protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+            // Input format is expected as: MatrixName RowIndex ColumnIndex Value
+            String[] elements = value.toString().split(",");
+            String matrixName = elements[0];
+            int row = Integer.parseInt(elements[1]);
+            int col = Integer.parseInt(elements[2]);
+            int matrixValue = Integer.parseInt(elements[3]);
+
+            Configuration conf = context.getConfiguration();
+            int n = Integer.parseInt(conf.get("n")); // columns of A (rows of B)
+            int p = Integer.parseInt(conf.get("p")); // columns of B
+
+            // Emit key-value pairs for matrix A
+            if (matrixName.equals("A")) {
+                for (int k = 0; k < p; k++) {
+                    outputKey.set(row + "," + k);
+                    outputValue.set(matrixValue);
+                    context.write(outputKey, new IntWritable(matrixValue * col));
+                }
+            }
+            // Emit key-value pairs for matrix B
+            else if (matrixName.equals("B")) {
+                for (int i = 0; i < n; i++) {
+                    outputKey.set(i + "," + col);
+                    outputValue.set(matrixValue);
+                    context.write(outputKey, new IntWritable(matrixValue * row));
+                }
+            }
+        }
+    }
+
+    // Reducer Class
+    public static class MatrixReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+        private IntWritable result = new IntWritable();
+
+        @Override
+        protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+            int sum = 0;
+            for (IntWritable val : values) {
+                sum += val.get();
+            }
+            result.set(sum);
+            context.write(key, result);
+        }
+    }
+
+    // Main Method
+    public static void main(String[] args) throws Exception {
+        Configuration conf = new Configuration();
+        conf.set("n", "3"); // Set the value for columns of A or rows of B
+        conf.set("p", "3"); // Set the value for columns of B
+
+        Job job = Job.getInstance(conf, "Matrix Multiplication");
+        job.setJarByClass(MatrixMultiplication.class);
+        job.setMapperClass(MatrixMapper.class);
+        job.setReducerClass(MatrixReducer.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+    
+}
+6)javac OneStepMatemul.java 
+
+7)after this code three java class get's created in home and create an folder name MM2 in home and paste three classes there
+
+8)jar -cvf MM2.jar -C MM2 /.
+
+9)MM2.jar gets created 
+
+10)gedit mm.txt
+
+11)Paste this in mm.txt
+1A,0,0,1.0
+2A,0,1,2.0
+3A,0,2,3.0
+4A,1,0,4.0
+5A,1,1,5.0
+6A,1,2,6.0
+7B,0,0,7.0
+8B,0,1,8.0
+9B,1,0,9.0
+10B,1,1,10.0
+11B,2,0,11.0
+12B,2,1,12.0
+
+hdfs dfs -put mm.txt /InputMM1
+hdfs dfs -put mm.txt /InputMM2
+hadoop jar MM2.jar OneStepMatemul /InputMM2 /OutputMM2
+hadoop jar MM2.jar OneStepMatemul /InputMM2 /OutputMM3
+hdfs dfs -ls /OutputMM3
+file name exist like part-r-0000 paste it 
+hdfs dfs -cat /OutputMM2/part-r-00000 
+
+
+
+
+
