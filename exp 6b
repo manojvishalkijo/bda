@@ -1,0 +1,49 @@
+1)To create Table
+syntax:
+create ‘Table_Name’,’col_fam_1’,’col_fam_1’,....... ’col_fam-n’
+code :
+create 'aamec','dept','year'
+
+
+syntax:
+put ‘table_name’,’row_key’,’column_family:attribute’,’value’
+here row_key is a unique key to retrive data
+code :
+this data will enter data into the dept column family
+put 'aamec','cse','dept:studentname','prasanna'
+put 'aamec','cse','dept:year','third'
+put 'aamec','cse','dept:section','A'
+
+This data will enter data into the year column family
+put 'aamec','cse','year:joinedyear','2021'
+put 'aamec','cse','year:finishingyear','2025'
+
+4) Scan Table
+same as desc in RDBMS
+syntax:
+scan ‘table_name’
+code:
+scan ‘aamec’
+
+5)To get specific data
+syntax:
+get ‘table_name’,’row_key’,[optional column family: attribute]
+code :
+get ‘aamec’,’cse’
+
+6.update table value
+The same put command is used to update the table value ,if the row key is aldready present in the
+database then it will update data according to the value ,if not present the it will create new row with the
+given row key
+
+7)To Delete Data
+syntax:
+delete ‘table_name’,’row_key’,’column_family:attribute’
+code :
+delete 'aamec','cse','year:joinedyear'
+
+
+
+
+
+
