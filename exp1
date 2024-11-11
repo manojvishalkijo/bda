@@ -154,3 +154,5 @@ hdoop@manoj-VirtualBox:~$ jps
 4952 DataNode
 5166 SecondaryNameNode
 5775 Jps
+
+(http://localhost:9870)
