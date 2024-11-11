@@ -1,0 +1,16 @@
+start-all.sh
+hdfs dfs -mkdir /cse1
+hdfs dfs -ls /
+hdfs dfs -rmdir /cse1
+hdfs dfs -ls /
+hdfs dfs -rm /cse1
+hdfs dfs -rm -r /cse1
+
+
+gedit example.txt
+hdfs dfs -put example.txt /cse
+hdfs dfs -ls /cse
+hdfs dfs -cat /cse/example.txt
+hdfs dfs -rm /cse/example.txt
+hdfs dfs -ls /cse
+ 
