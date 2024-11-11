@@ -1,0 +1,78 @@
+Step 1:To start hdfs
+
+Step 2: MySQL Installation
+sudo apt install mysql-server ( use this command to install MySQL server)
+
+COMMANDS:
+~$ sudo su
+After this enter your linux user password,then the root mode will be open here we don’tneed any
+authentication for mysql.
+~root$ mysql
+Creating user profiles and grant them permissions:
+Mysql> CREATE USER ‘bigdata'@'localhost' IDENTIFIED BY ‘bigdata’;
+Mysql>grant all privileges on *.* to bigdata@localhost;
+Note: This step is not required if you just use the root user to make CRUDoperations in the
+MySQL
+Mysql> CREATE USER ‘bigdata’@’127.0.0.1' IDENTIFIED BY ‘ bigdata’;
+Mysql>grant all privileges on *.* to bigdata@127.0.0.1;
+
+Note: Here, *.* means that the user we create has all the privileges on all the tablesof all the
+databases.
+Now, we have created user profiles which will be used to make CRUD operations in themysql
+Step 3: Create a database and table and insert data.
+Example:
+create database Employe;
+create table Employe.Emp(author_name varchar(65), total_no_of_articles int, phone_noint, address
+varchar(65));
+insert into Emp values(“Rohan”,10,123456789,”Lucknow”);
+Step 3: Create a database and table in the hive where data should be imported.
+create table geeks_hive_table(name string, total_articles int, phone_no int, address string)row format
+delimited fields terminated by ‘,’;
+
+Step 4: SQOOP INSTALLATION :
+
+After downloading the sqoop , go to the directory where we downloaded the sqoopand then extract
+it using the following command :
+$ tar -xvf sqoop-1.4.4.bin hadoop-2.0.4-alpha.tar.gz
+Then enter into the super user : $ su
+Next to move that to the usr/lib which requires a super user privilege
+$ mv sqoop-1.4.4.bin hadoop-2.0.4-alpha /usr/lib/sqoop
+Then exit : $ exit
+Goto .bashrc: $ sudo nano .bashrc , and then add the following
+export SQOOP_HOME=/usr/lib/sqoop
+export PATH=$PATH:$SQOOP_HOME/bin
+$ source ~/.bashrc
+Then configure the sqoop, goto the directory of the config folder of sqoop_home and then move the
+contents of template file to the environment file.
+$ cd $SQOOP_HOME/conf
+$ mv sqoop-env-template.sh sqoop-env.sh
+Then open the sqoop-environment file and then add the following,
+export HADOOP_COMMON_HOME=/usr/local/Hadoop
+export HADOOP_MAPRED_HOME=/usr/local/hadoop
+Note : Here we add the path of the Hadoop libraries and files and it may different from the path which
+we mentioned here. So, add the Hadoop path based on your installation.
+Step 5: Download and Configure mysql-connector-java :
+We can download mysql-connector-java-5.1.30.tar.gz file from the following link.
+Next, to extract the file and place it to the lib folder of sqoop
+$ tar -zxf mysql-connector-java-5.1.30.tar.gz
+$ su
+$ cd mysql-connector-java-5.1.30
+$ mv mysql-connector-java-5.1.30-bin.jar /usr/lib/sqoop/lib
+Note : This is library file is very important don’t skip this step because it contains the libraries to
+connect the mysql databases to jdbc.
+Verify sqoop: sqoop-version Step 3: hive database Creation
+hive> create database sqoop_example;
+hive>use sqoop_example;
+hive>create table sqoop(usr_name string,no_ops int,ops_names string);
+Hive commands much more alike mysql commands. Here, we just create the structure to store the
+datawhich we want to import in hive.
+
+Hive>show database Hive>use sqoop
+Hive>create table dell(mdl_name string,mdl_num int);
+Step 6: Importing data from MySQL to hive :
+sqoop import --connect \
+jdbc:mysql://127.0.0.1:3306/database_name_in_mysql \
+--username root --password cloudera \
+--table table_name_in_mysql \
+--hive-import --hive-table database_name_in_hive.table_name_in_hive \
+--m 1
