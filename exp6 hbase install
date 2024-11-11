@@ -1,0 +1,38 @@
+Download Hbase in downloads 
+ls
+tar xvf hbase-2.5.10-bin.tar.gz
+ls
+cd hbase-2.5.10/
+cd conf/
+ls
+gedit hbase-env.sh
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+Edit .bashrc file
+export HBASE_HOME=/home/manoj/hbase-2.5.10
+
+
+Note:*make sure that the hbase-2.5.10 folderin home directory before setting HBASE_HOME path
+, if not then move the hbase-2.5.10 file to home directory*
+
+gedit hbase-site.xml
+
+<property>
+<name>hbase.rootdir</name>
+<value>file:///home/prasanna/HBASE/hbase</value>
+</property>
+<property>
+<name>hbase.zookeeper.property.dataDir</name>
+<value>/home/prasanna/HBASE/zookeeper</value>
+</property>
+
+gedit hosts
+
+change in line no-2 by default the ip is 127.0.1.1
+change it to 127.0.0.1 in second line only
+
+cd hbase-2.5.10/bin/
+./start-hbase.sh
+jps
+http://localhost:16010 
+
